@@ -10,7 +10,7 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  BINARY_NAME: hackathon
+  BINARY_NAME: hackathon 
 
 jobs:
   test:
@@ -37,7 +37,6 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      # Install system deps needed by the pdf feature on Linux
       - name: Install pdf system deps (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
@@ -57,14 +56,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux x86_64 (default + pdf)
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             asset_suffix: linux-x86_64
             features: pdf
             ext: ""
 
-          # Linux ARM64
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             asset_suffix: linux-aarch64
@@ -72,21 +69,18 @@ jobs:
             ext: ""
             cross: true
 
-          # macOS Apple Silicon
           - os: macos-latest
             target: aarch64-apple-darwin
             asset_suffix: macos-aarch64
             features: ""
             ext: ""
 
-          # macOS Intel
           - os: macos-latest
             target: x86_64-apple-darwin
             asset_suffix: macos-x86_64
             features: ""
             ext: ""
 
-          # Windows x86_64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             asset_suffix: windows-x86_64
@@ -111,18 +105,18 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.target }}-cargo-
 
-      # System deps for pdf feature on Linux native builds
       - name: Install pdf system deps (Linux native)
         if: runner.os == 'Linux' && !matrix.cross
         run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
 
-      # cross for ARM64 Linux cross-compilation
       - name: Install cross
         if: matrix.cross == true
         run: cargo install cross --git https://github.com/cross-rs/cross
 
       - name: Build (native)
         if: "!matrix.cross"
+        env:
+          OPENSSL_STATIC: "1"
         run: |
           FEATURES="${{ matrix.features }}"
           if [ -n "$FEATURES" ]; then
@@ -134,6 +128,9 @@ jobs:
 
       - name: Build (cross)
         if: matrix.cross == true
+        env:
+          OPENSSL_STATIC: "1"
+          OPENSSL_VENDOR: "1"
         run: |
           FEATURES="${{ matrix.features }}"
           if [ -n "$FEATURES" ]; then
@@ -143,7 +140,17 @@ jobs:
           fi
         shell: bash
 
-      # ── Package the binary ──────────────────────────────────────────────────
+      # Shows what Cargo actually named the binary — useful for debugging
+      - name: List release dir (Unix)
+        if: runner.os != 'Windows'
+        run: ls target/${{ matrix.target }}/release/ | grep -v '\.d$'
+        shell: bash
+
+      - name: List release dir (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Get-ChildItem "target\${{ matrix.target }}\release\" | Where-Object { $_.Extension -eq '.exe' }
+
       - name: Package binary (Unix)
         if: runner.os != 'Windows'
         run: |
@@ -190,12 +197,6 @@ jobs:
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
-      - name: Extract changelog for this version
-        id: changelog
-        run: |
-          TAG="${{ github.ref_name }}"
-          echo "BODY=Release ${TAG}" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -205,7 +206,7 @@ jobs:
             ## ${{ github.ref_name }}
 
             ### Installation
-            Download the binary for your platform below, extract it, and place `tmt-hackathon` (or `tmt-hackathon.exe`) somewhere on your `PATH`.
+            Download the binary for your platform below, extract it, and place `hackathon` (or `hackathon.exe`) somewhere on your `PATH`.
 
             Set your API token before use:
             ```bash
@@ -228,5 +229,3 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-

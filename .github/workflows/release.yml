@@ -10,182 +10,83 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  BINARY_NAME: hackathon 
+  BINARY_NAME: hackathon
 
 jobs:
   test:
-    name: Test (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
+    name: Test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache Cargo registry & build
+      - name: Cache Cargo
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          key: ubuntu-test-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ubuntu-test-cargo-
 
-      - name: Install pdf system deps (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
+      - name: Install system deps
+        run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev libssl-dev
 
-      - name: Run tests (default features)
-        run: cargo test --locked
-
-      - name: Run tests (with pdf feature)
-        if: runner.os == 'Linux'
+      - name: Run tests
         run: cargo test --locked --features pdf
 
   build:
-    name: Build ${{ matrix.target }}
+    name: Build linux-x86_64
     needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            asset_suffix: linux-x86_64
-            features: pdf
-            ext: ""
-
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            asset_suffix: linux-aarch64
-            features: pdf
-            ext: ""
-            cross: true
-
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            asset_suffix: macos-aarch64
-            features: ""
-            ext: ""
-
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            asset_suffix: macos-x86_64
-            features: ""
-            ext: ""
-
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            asset_suffix: windows-x86_64
-            features: ""
-            ext: ".exe"
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust stable + target
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
 
-      - name: Cache Cargo registry & build
+      - name: Cache Cargo
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.target }}-cargo-
+          key: ubuntu-release-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ubuntu-release-cargo-
 
-      - name: Install pdf system deps (Linux native)
-        if: runner.os == 'Linux' && !matrix.cross
-        run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
+      - name: Install system deps
+        run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev libssl-dev
 
-      - name: Install cross
-        if: matrix.cross == true
-        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Build
+        run: cargo build --release --locked --features pdf
 
-      - name: Build (native)
-        if: "!matrix.cross"
-        env:
-          OPENSSL_STATIC: "1"
+      - name: Package
+        id: package
         run: |
-          FEATURES="${{ matrix.features }}"
-          if [ -n "$FEATURES" ]; then
-            cargo build --release --locked --target ${{ matrix.target }} --features "$FEATURES"
-          else
-            cargo build --release --locked --target ${{ matrix.target }}
-          fi
-        shell: bash
-
-      - name: Build (cross)
-        if: matrix.cross == true
-        env:
-          OPENSSL_STATIC: "1"
-          OPENSSL_VENDOR: "1"
-        run: |
-          FEATURES="${{ matrix.features }}"
-          if [ -n "$FEATURES" ]; then
-            cross build --release --locked --target ${{ matrix.target }} --features "$FEATURES"
-          else
-            cross build --release --locked --target ${{ matrix.target }}
-          fi
-        shell: bash
-
-      # Shows what Cargo actually named the binary — useful for debugging
-      - name: List release dir (Unix)
-        if: runner.os != 'Windows'
-        run: ls target/${{ matrix.target }}/release/ | grep -v '\.d$'
-        shell: bash
-
-      - name: List release dir (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: Get-ChildItem "target\${{ matrix.target }}\release\" | Where-Object { $_.Extension -eq '.exe' }
-
-      - name: Package binary (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          BINARY="target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}"
-          ARCHIVE="${{ env.BINARY_NAME }}-${{ github.ref_name }}-${{ matrix.asset_suffix }}.tar.gz"
-          cp "$BINARY" "${{ env.BINARY_NAME }}"
-          tar -czf "$ARCHIVE" "${{ env.BINARY_NAME }}" .env_example
-          echo "ASSET=$ARCHIVE" >> $GITHUB_ENV
-
-      - name: Package binary (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $binary = "target\${{ matrix.target }}\release\${{ env.BINARY_NAME }}.exe"
-          $archive = "${{ env.BINARY_NAME }}-${{ github.ref_name }}-${{ matrix.asset_suffix }}.zip"
-          Copy-Item $binary "${{ env.BINARY_NAME }}.exe"
-          Compress-Archive -Path "${{ env.BINARY_NAME }}.exe", ".env_example" -DestinationPath $archive
-          echo "ASSET=$archive" | Out-File -FilePath $env:GITHUB_ENV -Append
+          ARCHIVE="${{ env.BINARY_NAME }}-${{ github.ref_name }}-linux-x86_64.tar.gz"
+          cp target/release/${{ env.BINARY_NAME }} ${{ env.BINARY_NAME }}
+          tar -czf "$ARCHIVE" ${{ env.BINARY_NAME }} .env_example
+          echo "asset=$ARCHIVE" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.BINARY_NAME }}-${{ matrix.asset_suffix }}
-          path: ${{ env.ASSET }}
+          name: ${{ env.BINARY_NAME }}-linux-x86_64
+          path: ${{ steps.package.outputs.asset }}
           retention-days: 1
 
   release:
     name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download all artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
@@ -201,26 +102,16 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
           body: |
             ## ${{ github.ref_name }}
 
-            ### Installation
-            Download the binary for your platform below, extract it, and place `hackathon` (or `hackathon.exe`) somewhere on your `PATH`.
-
-            Set your API token before use:
+            ### Installation (Linux x86_64)
             ```bash
+            tar -xzf hackathon-${{ github.ref_name }}-linux-x86_64.tar.gz
+            chmod +x hackathon
             export TMT_API_TOKEN=your_token_here
+            ./hackathon --help
             ```
-
-            ### Assets
-            | Platform | File |
-            |----------|------|
-            | Linux x86_64 (with PDF support) | `*-linux-x86_64.tar.gz` |
-            | Linux ARM64  (with PDF support) | `*-linux-aarch64.tar.gz` |
-            | macOS Apple Silicon | `*-macos-aarch64.tar.gz` |
-            | macOS Intel | `*-macos-x86_64.tar.gz` |
-            | Windows x86_64 | `*-windows-x86_64.zip` |
 
             Verify your download with `SHA256SUMS.txt`.
           files: artifacts/*

@@ -100,6 +100,8 @@ impl TmtClient {
         let mut rate_limit_attempts: u32 = 0;
         let mut non_rate_limit_failures: u32 = 0;
         let mut call_attempt: u32 = 0;
+        // always overwritten alongside non_rate_limit_failures before the break
+        #[allow(unused_assignments)]
         let mut last_error: Option<TmtError> = None;
 
         loop {

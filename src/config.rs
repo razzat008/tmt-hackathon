@@ -17,6 +17,7 @@ pub struct RuntimeConfig {
     pub font_path: Option<PathBuf>,
     pub pdf_dpi: u32,
     pub pdf_jpeg_quality: u8,
+    pub debug_bboxes: bool,
 }
 
 impl TryFrom<&Cli> for RuntimeConfig {
@@ -84,6 +85,7 @@ impl TryFrom<&Cli> for RuntimeConfig {
             font_path: cli.font_path.clone(),
             pdf_dpi: cli.dpi,
             pdf_jpeg_quality: cli.jpeg_quality,
+            debug_bboxes: cli.debug_bboxes,
         })
     }
 }

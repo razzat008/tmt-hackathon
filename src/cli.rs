@@ -56,4 +56,8 @@ pub struct Cli {
     /// Verbose logging
     #[arg(long, default_value_t = false)]
     pub verbose: bool,
+
+    /// Draw bounding boxes around translated text regions (PDF debug mode)
+    #[arg(long, default_value_t = false)]
+    pub debug_bboxes: bool,
 }

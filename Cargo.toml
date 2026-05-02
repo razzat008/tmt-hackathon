@@ -42,3 +42,5 @@ pdf = [
   "dep:ttf-parser",
   "dep:encoding_rs",
 ]
+env:
+  BINARY_NAME: tmt_hackathon

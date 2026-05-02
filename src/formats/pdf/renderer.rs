@@ -3,6 +3,7 @@ use crate::formats::pdf::error::RenderError;
 #[derive(Debug, Clone)]
 pub struct GlyphInfo {
     pub glyph_id: u32,
+    pub cluster: u32,
     pub x_advance: i32,
     pub y_advance: i32,
     pub x_offset: i32,
@@ -19,7 +20,6 @@ pub fn shape_text(
     lang: &str,
 ) -> Result<Vec<GlyphInfo>, RenderError> {
     use std::str::FromStr;
-
     use rustybuzz::{Direction, Face, Language, Script, Tag, UnicodeBuffer, script as scripts, shape};
 
     let face = Face::from_slice(font_data, 0).ok_or_else(|| RenderError::Font {
@@ -33,7 +33,6 @@ pub fn shape_text(
     let rb_script = Script::from_iso15924_tag(tag).unwrap_or(scripts::LATIN);
     buf.set_script(rb_script);
 
-    // Language::from_str is provided via the FromStr trait impl in rustybuzz.
     if let Ok(language) = Language::from_str(lang) {
         buf.set_language(language);
     }
@@ -47,6 +46,7 @@ pub fn shape_text(
         .zip(shaped.glyph_positions())
         .map(|(info, pos)| GlyphInfo {
             glyph_id: info.glyph_id,
+            cluster: info.cluster,   // byte offset of the source codepoint this glyph belongs to
             x_advance: pos.x_advance,
             y_advance: pos.y_advance,
             x_offset: pos.x_offset,
@@ -57,19 +57,13 @@ pub fn shape_text(
     Ok(glyphs)
 }
 
-/// Rasterise shaped glyphs onto an RGBA canvas using ab_glyph.
-///
-/// `upem` is the font's units-per-em (from rustybuzz Face::units_per_em).
-/// HarfBuzz positions are in font units; we scale them to pixels via `font_size_px / upem`.
 #[cfg(feature = "pdf")]
 pub fn render_glyphs(
     font_data: &[u8],
     glyphs: &[GlyphInfo],
     font_size_px: u32,
     upem: i32,
-    width: u32,
-    height: u32,
-) -> Result<image::RgbaImage, RenderError> {
+) -> Result<(image::RgbaImage, f32), RenderError> {
     use ab_glyph::{Font, FontRef, Glyph, GlyphId, PxScale, ScaleFont};
     use ab_glyph::point;
     use image::Rgba;
@@ -77,29 +71,34 @@ pub fn render_glyphs(
     let font = FontRef::try_from_slice(font_data)
         .map_err(|e| RenderError::Font { message: e.to_string() })?;
 
-    // ab_glyph's PxScale is defined so that ascender + |descender| ≈ scale.y pixels.
-    // We use the font's own line metrics to derive a px_per_unit factor, then set
-    // scale = px_per_unit * upem so that a full em equals font_size_px pixels.
-    // This keeps ab_glyph's internal advance measurements in sync with HarfBuzz's
-    // design-unit positions (both share the same upem coordinate space).
     let scale = PxScale::from(font_size_px as f32);
-
-    // Use ab_glyph's scaled metrics to position the baseline consistently.
     let scaled = font.as_scaled(scale);
-    let ascent_px = scaled.ascent();
-    let descent_px = scaled.descent();
-    let line_gap_px = scaled.line_gap();
-    let total_line_height = ascent_px - descent_px + line_gap_px;
+    let ascent_px  = scaled.ascent();
+    let descent_px = scaled.descent(); // negative in ab_glyph convention
 
-    // Expand the canvas height to hold the full line metrics to avoid clipping.
-    // We render into an oversized buffer and let the PDF matrix scale it to rect.
-    let canvas_h = total_line_height.ceil() as u32 + 2;
-    let canvas_w = width.max(canvas_h * 10); // at least as wide as the text
-    let baseline_y = ascent_px;  // pixels from top of canvas to baseline
+    // Bug 11B fix: explicit top/bottom headroom so Devanagari combining marks are not clipped.
+    // top_extra (0.30×) covers vowel signs above the ascent line (ि ी ँ ं).
+    // bottom_extra (0.35×) covers below-baseline matras (ु ू) that extend past descent.
+    let top_extra    = (font_size_px as f32 * 0.30).ceil() as u32;
+    let bottom_extra = (font_size_px as f32 * 0.35).ceil() as u32;
+    let descent_abs  = (-descent_px).ceil() as u32;
+    let canvas_h = (ascent_px.ceil() as u32 + descent_abs + top_extra + bottom_extra)
+        .max((font_size_px as f32 * 1.5).ceil() as u32);
+
+    // Baseline y: ascent pushed down by top_extra so marks above it stay within canvas.
+    let baseline_y = ascent_px + top_extra as f32;
+
+    // Bug 10A fix: canvas_w = natural advance sum, not the rect width.
+    // Stamping the cropped canvas in the PDF at exactly shaped_width_pt removes the
+    // artificial inter-glyph gaps caused by stretching a wide canvas over a small rect.
+    let px_per_unit = font_size_px as f32 / upem as f32;
+    let total_advance: f32 = glyphs.iter().map(|g| g.x_advance as f32 * px_per_unit).sum();
+    // Step 4: +2px prevents JPEG DCT block artifacts at the right canvas edge (white→text boundary).
+    let canvas_w = (total_advance.ceil() as u32 + 2).max(1);
 
     eprintln!(
         "[render_glyphs] upem={upem} font_size_px={font_size_px} \
-         ascent={ascent_px:.1} descent={descent_px:.1} \
+         ascent={ascent_px:.1} descent={descent_px:.1} top_extra={top_extra} bottom_extra={bottom_extra} \
          canvas={canvas_w}x{canvas_h} baseline_y={baseline_y:.1} \
          n_glyphs={}",
         glyphs.len()
@@ -109,16 +108,16 @@ pub fn render_glyphs(
     let mut img = image::RgbaImage::from_pixel(canvas_w, canvas_h, Rgba([255, 255, 255, 255]));
     let mut x_pen: f32 = 0.0;
 
-    // px_per_unit converts HarfBuzz design units → pixel space used by ab_glyph.
-    let px_per_unit = font_size_px as f32 / upem as f32;
-
     for (i, glyph_info) in glyphs.iter().enumerate() {
         let x_offset_px = glyph_info.x_offset as f32 * px_per_unit;
+        // Bug 11E: MINUS y_offset because HarfBuzz is positive-y-up but image coords are
+        // positive-y-down.  A positive HarfBuzz y_offset lifts the glyph up → smaller
+        // y pixel coordinate → subtract from baseline_y.
         let y_offset_px = glyph_info.y_offset as f32 * px_per_unit;
         let x_advance_px = glyph_info.x_advance as f32 * px_per_unit;
 
         let pos_x = x_pen + x_offset_px;
-        let pos_y = baseline_y - y_offset_px;
+        let pos_y = baseline_y - y_offset_px; // MINUS: HarfBuzz y-up → image y-down
 
         let glyph = Glyph {
             id: GlyphId(glyph_info.glyph_id as u16),
@@ -139,8 +138,8 @@ pub fn render_glyphs(
 
         if let Some(outlined) = outlined {
             let bounds = outlined.px_bounds();
-            // ab_glyph's draw() callback passes RELATIVE pixel coords within the glyph's
-            // bounding box (0..width, 0..height). We must add bounds.min to get canvas coords.
+            // ab_glyph draw() passes RELATIVE coords within the glyph bbox.
+            // Must add bounds.min to get canvas-absolute coordinates.
             let bb_min_x = bounds.min.x as i32;
             let bb_min_y = bounds.min.y as i32;
             outlined.draw(|rel_px, rel_py, coverage| {
@@ -154,7 +153,6 @@ pub fn render_glyphs(
                 }
                 let cx = cx as u32;
                 let cy = cy as u32;
-                // Composite black glyph over existing pixel (which starts white).
                 let existing = img.get_pixel(cx, cy);
                 let inv = 1.0 - coverage.min(1.0);
                 img.put_pixel(cx, cy, Rgba([
@@ -169,14 +167,55 @@ pub fn render_glyphs(
         x_pen += x_advance_px;
     }
 
-    // Scale down to the requested dimensions (the PDF matrix handles physical sizing)
-    let final_img = if canvas_w != width || canvas_h != height {
-        image::imageops::resize(&img, width, height, image::imageops::FilterType::Lanczos3)
-    } else {
-        img
-    };
+    Ok((img, baseline_y))
+}
 
-    Ok(final_img)
+#[cfg(all(feature = "pdf", test))]
+mod tests {
+    use super::*;
+
+    fn noto_regular() -> &'static [u8] {
+        crate::formats::pdf::bundled_fonts::NOTO_DEVA_REGULAR
+    }
+
+    fn upem_for(font_data: &[u8]) -> i32 {
+        use rustybuzz::Face;
+        Face::from_slice(font_data, 0).map(|f| f.units_per_em() as i32).unwrap_or(1000)
+    }
+
+    // Regression: canvas_h must be ≥ font_size_px * 1.5 for any Devanagari text.
+    #[test]
+    fn canvas_h_at_least_one_and_half_times_font_size() {
+        let font_data = noto_regular();
+        let font_size_px = 14_u32;
+        let upem = upem_for(font_data);
+        let glyphs = shape_text(font_data, "नमस्ते", "Deva", "ne").unwrap();
+        let (img, _baseline) = render_glyphs(font_data, &glyphs, font_size_px, upem).unwrap();
+        assert!(
+            img.height() >= (font_size_px as f32 * 1.5).ceil() as u32,
+            "canvas_h={} < 1.5 * font_size_px={}",
+            img.height(), font_size_px
+        );
+    }
+
+    // Regression: canvas_w == shaped advance sum (no dead whitespace on the right).
+    #[test]
+    fn canvas_width_equals_shaped_advance() {
+        let font_data = noto_regular();
+        let font_size_px = 16_u32;
+        let upem = upem_for(font_data);
+        let glyphs = shape_text(font_data, "प्रारम्भिक", "Deva", "ne").unwrap();
+        let px_per_unit = font_size_px as f32 / upem as f32;
+        let expected_w: f32 = glyphs.iter().map(|g| g.x_advance as f32 * px_per_unit).sum();
+        let (img, _) = render_glyphs(font_data, &glyphs, font_size_px, upem).unwrap();
+        // canvas_w = ceil(advance) + 2 (JPEG edge artifact margin)
+        assert_eq!(
+            img.width(),
+            expected_w.ceil() as u32 + 2,
+            "canvas_w mismatch: got {} expected {}",
+            img.width(), expected_w.ceil() as u32 + 2
+        );
+    }
 }
 
 /// Flatten RGBA onto white and encode as JPEG.
@@ -211,9 +250,7 @@ pub fn render_glyphs(
     _glyphs: &[GlyphInfo],
     _font_size_px: u32,
     _upem: i32,
-    _width: u32,
-    _height: u32,
-) -> Result<image::RgbaImage, RenderError> {
+) -> Result<(image::RgbaImage, f32), RenderError> {
     Err(RenderError::FeatureDisabled)
 }
 

@@ -4,6 +4,7 @@ use tracing::info;
 
 use crate::{config::RuntimeConfig, error::AppError, translate::TranslationService};
 
+pub mod bundled_fonts;
 pub mod error;
 pub mod fonts;
 pub mod parser;
@@ -47,12 +48,6 @@ async fn translate_pdf(
     config: &TranslateConfig,
     service: &TranslationService,
 ) -> Result<(), PdfTranslateError> {
-    if requires_complex_script_font(&config.tgt_lang) && config.font_path.is_none() {
-        return Err(PdfTranslateError::ComplexScriptFontRequired {
-            lang: config.tgt_lang.clone(),
-        });
-    }
-
     if let Some(path) = &config.font_path {
         if !path.exists() {
             return Err(PdfTranslateError::FontNotFound { path: path.clone() });
@@ -80,11 +75,4 @@ async fn translate_pdf(
     )?;
 
     Ok(())
-}
-
-fn requires_complex_script_font(lang: &str) -> bool {
-    matches!(
-        lang.to_ascii_lowercase().as_str(),
-        "ne" | "nep" | "nepali" | "tmg" | "tamang"
-    )
 }

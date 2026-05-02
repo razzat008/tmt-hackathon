@@ -1,5 +1,5 @@
 # TMT File Translation Tool
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/razzat008/collaboratex)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/razzat008/tmt-hackathon)
 or read more at [hail-translation.rajatdahal.com.np](http://hail-translation.rajatdahal.com.np/) or see
 demo video: [link](https://odysee.com/@asdfmeh:6/Project-Hail-Translation---Team--thomascalculus:b28c52c01c?r=HBw2QcrMjibheAPWGhg6tE86xSgu78ay)
 

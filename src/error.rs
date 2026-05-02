@@ -49,6 +49,9 @@ pub enum AppError {
     #[error("pdf error: {message}")]
     Pdf { message: String },
 
+    #[error("docx error: {message}")]
+    Docx { message: String },
+
     #[error("not implemented: {feature}")]
     NotImplemented { feature: String },
 }

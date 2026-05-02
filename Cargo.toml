@@ -17,15 +17,19 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 httpdate = { version = "1.0", optional = true }
+# image is non-optional so RgbaImage is always in scope for type-checking stubs
+image = "0.25"
 
 # PDF pipeline (optional; enable with --features pdf)
 pdfium-render = { version = "0.8", optional = true }
 lopdf = { version = "0.32", optional = true }
 rustybuzz = { version = "0.13", optional = true }
-freetype = { version = "0.7", optional = true }
-image = { version = "0.25", optional = true }
+ab_glyph = { version = "0.2", optional = true }
 anyhow = { version = "1", optional = true }
+ttf-parser = { version = "0.21", optional = true }
+encoding_rs = { version = "0.8", optional = true }
 futures = "0.3.32"
+docx-rust = "0.1.11"
 
 [features]
 httpdate = ["dep:httpdate"]
@@ -33,7 +37,8 @@ pdf = [
   "dep:pdfium-render",
   "dep:lopdf",
   "dep:rustybuzz",
-  "dep:freetype",
-  "dep:image",
+  "dep:ab_glyph",
   "dep:anyhow",
+  "dep:ttf-parser",
+  "dep:encoding_rs",
 ]

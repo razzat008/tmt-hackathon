@@ -33,6 +33,7 @@ pub async fn translate(
         concurrency: config.concurrency,
         dpi: config.pdf_dpi,
         jpeg_quality: config.pdf_jpeg_quality,
+        debug_bboxes: config.debug_bboxes,
     };
 
     translate_pdf(&translate_config, service)

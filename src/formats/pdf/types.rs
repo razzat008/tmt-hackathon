@@ -45,4 +45,5 @@ pub struct TranslateConfig {
     pub concurrency: usize,
     pub dpi: u32,
     pub jpeg_quality: u8,
+    pub debug_bboxes: bool,
 }

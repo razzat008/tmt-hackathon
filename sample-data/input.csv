@@ -1,0 +1,21 @@
+ID,Category,English_Source,Context,Complexity
+1,Greeting,Hello how are you today?,Formal Meeting,Low
+2,Direction,Turn left at the next traffic light.,Navigation,Medium
+3,Question,What time does the last bus leave?,Travel,Medium
+4,Emotion,I am very happy to see you again.,Personal,Low
+5,Emergency,Please call an ambulance immediately!,Urgent,High
+6,Action,She is reading a book in the library.,Daily Life,Medium
+7,Food,This spicy curry tastes delicious.,Dining,Low
+8,Weather,It might rain later this afternoon.,Observation,Medium
+9,Business,The meeting has been rescheduled to tomorrow.,Work,High
+10,Proverb,Better late than never.,Idiomatic,High
+11,Health,I have a headache and need some medicine.,Medical,Medium
+12,Shopping,How much does this woolen sweater cost?,Market,Low
+13,Tech,Please enter your password to login.,Digital,Medium
+14,Family,My younger brother is studying engineering.,Personal,Medium
+15,Nature,The Himalayan mountains look beautiful at sunrise.,Descriptive,High
+16,Request,Could you please pass me the salt?,Dining,Low
+17,Time,I have been waiting here for two hours.,Duration,Medium
+18,Education,Education is the key to a bright future.,Abstract,High
+19,Agreement,I completely agree with your suggestion.,Opinion,Medium
+20,Farewell,Safe travels and take care of yourself.,Parting,Low

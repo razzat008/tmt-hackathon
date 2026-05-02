@@ -30,15 +30,15 @@ pub struct Cli {
     pub api_token: Option<String>,
 
     /// Max concurrent in-flight requests
-    #[arg(long, default_value_t = 4)]
+    #[arg(long, default_value_t = 2)]
     pub concurrency: usize,
 
     /// Optional delay (ms) between requests
     #[arg(long)]
     pub rate_limit_ms: Option<u64>,
 
-    /// Max retries per sentence when rate limited
-    #[arg(long, default_value_t = 8)]
+    /// Max retries for non-rate-limit failures per sentence
+    #[arg(long, default_value_t = 4)]
     pub max_retries: u32,
 
     /// PDF font path for complex scripts (required for PDF output)

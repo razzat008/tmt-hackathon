@@ -12,7 +12,7 @@ pub async fn translate(
     src_lang: &str,
     tgt_lang: &str,
     service: &TranslationService,
-    _config: &RuntimeConfig,
+    config: &RuntimeConfig,
 ) -> Result<(), AppError> {
     let delimiter = delimiter_for(input)?;
 
@@ -68,7 +68,7 @@ pub async fn translate(
                 (row_idx, col_idx, translated)
             }
         })
-        .buffer_unordered(1)
+        .buffer_unordered(config.concurrency)
         .collect()
         .await;
 

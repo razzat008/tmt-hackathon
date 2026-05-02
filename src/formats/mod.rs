@@ -20,7 +20,13 @@ pub async fn translate_file(
 
     info!(format = %ext, "dispatching format handler");
 
-    let client = TmtClient::new(&config.base_url, &config.api_token);
+    let client = TmtClient::with_config(
+        &config.base_url,
+        &config.api_token,
+        config.rate_limit_ms,
+        config.max_retries,
+        300,
+    );
     let service = TranslationService::new(client, config)?;
 
     match ext.as_str() {

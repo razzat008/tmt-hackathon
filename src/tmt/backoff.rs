@@ -25,7 +25,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            base_cooldown: Duration::from_secs_f64(1.0),
+            base_cooldown: Duration::from_millis(300),
             max_cooldown: Duration::from_secs(60),
             jitter_factor: 0.5,
             max_streak: 10,
@@ -156,7 +156,13 @@ impl AsyncGlobalBackoffState {
             match maybe_wait {
                 None => return,
                 Some(d) if d.is_zero() => return,
-                Some(d) => tokio::time::sleep(d).await,
+                Some(d) => {
+                    tracing::warn!(
+                        wait_ms = d.as_millis(),
+                        "backoff: waiting before next request"
+                    );
+                    tokio::time::sleep(d).await;
+                }
             }
         }
     }
@@ -181,6 +187,12 @@ impl AsyncGlobalBackoffState {
             Some(existing) if existing > new_resume => existing,
             _ => new_resume,
         });
+
+        tracing::warn!(
+            cooldown_ms = cooldown.as_millis(),
+            streak = guard.streak,
+            "backoff: setting cooldown after 429"
+        );
 
         cooldown
     }

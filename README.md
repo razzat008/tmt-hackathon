@@ -1,6 +1,7 @@
 # TMT File Translation Tool
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/razzat008/collaboratex)
-or read more at [https://hail-translation.rajatdahal.com.np/](http://hail-translation.rajatdahal.com.np/)
+or read more at [hail-translation.rajatdahal.com.np](http://hail-translation.rajatdahal.com.np/) or see
+demo video: [link](https://odysee.com/@asdfmeh:6/Project-Hail-Translation---Team--thomascalculus:b28c52c01c?r=HBw2QcrMjibheAPWGhg6tE86xSgu78ay)
 
 A high-performance CLI utility for translating structured documents between multiple languages using the TMT Translation API.
 

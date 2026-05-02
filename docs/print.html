@@ -1,0 +1,991 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>TMT — Translation Management Tool</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Documentation for the TMT file translation CLI tool supporting CSV, TSV, DOCX, and PDF formats.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-e8764755.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-4faba5cc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TMT — Translation Management Tool</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/razzat008/tmt-hackathon" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="tmt--translation-management-tool"><a class="header" href="#tmt--translation-management-tool">TMT — Translation Management Tool</a></h1>
+<p>TMT is a high-performance command-line utility for translating structured documents while preserving their original formatting and metadata. It supports CSV, TSV, DOCX, and PDF formats with first-class handling of complex scripts such as Devanagari.</p>
+<p>Translation is powered by the <a href="https://tmt.ilprl.ku.edu.np">TMT API</a> provided by Kathmandu University’s ILPRL lab, which supports English, Nepali, and Tamang language pairs.</p>
+<h2 id="supported-formats"><a class="header" href="#supported-formats">Supported Formats</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Format</th><th>Extension</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Comma-separated values</td><td><code>.csv</code></td><td>All cells translated</td></tr>
+<tr><td>Tab-separated values</td><td><code>.tsv</code></td><td>All cells translated</td></tr>
+<tr><td>Word document</td><td><code>.docx</code></td><td>Paragraph-level translation</td></tr>
+<tr><td>PDF</td><td><code>.pdf</code></td><td>Requires <code>pdf</code> feature flag; needs a font for Devanagari rendering</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="supported-languages"><a class="header" href="#supported-languages">Supported Languages</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Code</th><th>Language</th></tr>
+</thead>
+<tbody>
+<tr><td><code>en</code></td><td>English</td></tr>
+<tr><td><code>ne</code></td><td>Nepali</td></tr>
+<tr><td><code>tmg</code></td><td>Tamang</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="design-philosophy"><a class="header" href="#design-philosophy">Design Philosophy</a></h2>
+<p>The tool follows a strict <strong>Parse → Validate → Execute</strong> lifecycle:</p>
+<ol>
+<li>CLI arguments are parsed and validated into a <code>RuntimeConfig</code>.</li>
+<li>The validated config is used to dispatch to a format-specific handler.</li>
+<li>Each handler extracts text, delegates translation to the <code>TranslationService</code>, and reconstructs the output document.</li>
+</ol>
+<p>This separation keeps format concerns isolated from network and rate-limiting logic, making each layer independently testable and extensible.</p>
+<h2 id="source-repository"><a class="header" href="#source-repository">Source Repository</a></h2>
+<p>The source code is available at <a href="https://github.com/razzat008/tmt-hackathon">github.com/razzat008/tmt-hackathon</a>.<br>Created by <a href="https://github.com/razzat008">github/razzat008</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>This section walks you through everything you need to go from zero to translating your first document.</p>
+<ul>
+<li><strong><a href="#prerequisites--building">Prerequisites &amp; Building</a></strong> — Install the Rust toolchain, optional system libraries for PDF support, and compile the binary.</li>
+<li><strong><a href="#configuration">Configuration</a></strong> — Set up your API token and understand the runtime validation rules.</li>
+<li><strong><a href="#cli-reference">CLI Reference</a></strong> — A complete reference for every command-line argument.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="prerequisites--building"><a class="header" href="#prerequisites--building">Prerequisites &amp; Building</a></h1>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before building TMT, ensure the following are available on your system:</p>
+<ul>
+<li><strong>Rust toolchain</strong> (Edition 2024). Install via <a href="https://rustup.rs">rustup.rs</a>.</li>
+<li><strong>C libraries</strong> (PDF support only): <code>freetype</code> and <code>libpdfium</code> must be available in your system path or linker search path.</li>
+</ul>
+<h2 id="building"><a class="header" href="#building">Building</a></h2>
+<h3 id="standard-build"><a class="header" href="#standard-build">Standard Build</a></h3>
+<p>The default build enables support for DOCX, CSV, and TSV translation:</p>
+<pre><code class="language-bash">cargo build --release
+</code></pre>
+<p>The compiled binary will be at <code>target/release/tmt</code>.</p>
+<h3 id="build-with-pdf-support"><a class="header" href="#build-with-pdf-support">Build with PDF Support</a></h3>
+<p>PDF support is gated behind an optional feature flag because it depends on the external C libraries <code>pdfium-render</code> and <code>freetype</code>:</p>
+<pre><code class="language-bash">cargo build --release --features pdf
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Without the <code>pdf</code> feature, attempting to translate a <code>.pdf</code> file will produce an error at runtime.</p>
+</blockquote>
+<h2 id="quick-smoke-test"><a class="header" href="#quick-smoke-test">Quick Smoke Test</a></h2>
+<p>After building, verify the binary works:</p>
+<pre><code class="language-bash">./target/release/tmt --help
+</code></pre>
+<h2 id="global-constants"><a class="header" href="#global-constants">Global Constants</a></h2>
+<p>These constants are compiled into the binary and cannot be overridden at runtime:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>DEFAULT_BASE_URL</code></td><td><code>https://tmt.ilprl.ku.edu.np/lang-translate</code></td><td>Default API endpoint</td></tr>
+<tr><td><code>MAX_FILE_SIZE_BYTES</code></td><td><code>1,000,000</code> (1 MB)</td><td>Hard limit for input files</td></tr>
+<tr><td><code>MAX_REQUEST_TEXT_BYTES</code></td><td><code>5,000</code></td><td>Maximum characters sent per API request</td></tr>
+</tbody>
+</table>
+</div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
+<h2 id="api-token"><a class="header" href="#api-token">API Token</a></h2>
+<p>TMT requires an API token to communicate with the TMT translation service. You can supply it in one of two ways:</p>
+<p><strong>Via environment variable (recommended):</strong></p>
+<pre><code class="language-bash">export TMT_API_TOKEN=your_secret_token_here
+</code></pre>
+<p>Or place it in a <code>.env</code> file in the project root (a template is provided at <code>.env_example</code>):</p>
+<pre><code>TMT_API_TOKEN=your_secret_token_here
+</code></pre>
+<p><strong>Via CLI argument (overrides the environment variable):</strong></p>
+<pre><code class="language-bash">tmt --api-token your_secret_token_here ...
+</code></pre>
+<h2 id="runtime-validation"><a class="header" href="#runtime-validation">Runtime Validation</a></h2>
+<p>Before translation begins, all CLI arguments are transformed into a <code>RuntimeConfig</code> struct via <code>TryFrom&lt;&amp;Cli&gt;</code>. This process enforces the following rules — any violation exits with a descriptive error:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rule</th><th>Details</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>API token must be present</strong></td><td>Fails with <code>AppError::MissingApiToken</code> if neither <code>--api-token</code> nor <code>TMT_API_TOKEN</code> is set, or if the value is whitespace-only.</td></tr>
+<tr><td><strong>Concurrency ≥ 1</strong></td><td><code>--concurrency 0</code> is rejected with an <code>InvalidArgument</code> error.</td></tr>
+<tr><td><strong>Source and target languages must differ</strong></td><td><code>--src-lang en --tgt-lang en</code> is rejected (case-insensitive check).</td></tr>
+<tr><td><strong>DPI ≥ 1</strong></td><td>Applies to PDF output only.</td></tr>
+<tr><td><strong>JPEG quality in range [1, 100]</strong></td><td>Applies to PDF output only.</td></tr>
+<tr><td><strong>Font path must exist</strong></td><td>If <code>--font-path</code> is provided, the path must point to an existing file.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="example-usage"><a class="header" href="#example-usage">Example Usage</a></h2>
+<h3 id="translate-a-csv-from-english-to-nepali"><a class="header" href="#translate-a-csv-from-english-to-nepali">Translate a CSV from English to Nepali</a></h3>
+<pre><code class="language-bash">tmt \
+  --input data.csv \
+  --output data_ne.csv \
+  --src-lang en \
+  --tgt-lang ne
+</code></pre>
+<h3 id="translate-a-docx-from-nepali-to-english"><a class="header" href="#translate-a-docx-from-nepali-to-english">Translate a DOCX from Nepali to English</a></h3>
+<pre><code class="language-bash">tmt \
+  --input document.docx \
+  --output document_en.docx \
+  --src-lang ne \
+  --tgt-lang en
+</code></pre>
+<h3 id="translate-a-pdf-requires-pdf-feature"><a class="header" href="#translate-a-pdf-requires-pdf-feature">Translate a PDF (requires <code>pdf</code> feature)</a></h3>
+<p>PDF translation requires a TrueType or OpenType font for rendering the target script, especially for Devanagari:</p>
+<pre><code class="language-bash">tmt \
+  --input report.pdf \
+  --output report_ne.pdf \
+  --src-lang en \
+  --tgt-lang ne \
+  --font-path /usr/share/fonts/truetype/Noto/NotoSansDevanagari-Regular.ttf
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="cli-reference"><a class="header" href="#cli-reference">CLI Reference</a></h1>
+<p>The TMT CLI is defined by the <code>Cli</code> struct using the <code>clap</code> crate. The file format is inferred from the input file’s extension — no explicit format flag is needed.</p>
+<h2 id="arguments"><a class="header" href="#arguments">Arguments</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Argument</th><th>Short</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--input</code></td><td><code>-i</code></td><td><code>PathBuf</code></td><td><em>(required)</em></td><td>Path to the source file (<code>.pdf</code>, <code>.docx</code>, <code>.csv</code>, <code>.tsv</code>).</td></tr>
+<tr><td><code>--output</code></td><td><code>-o</code></td><td><code>PathBuf</code></td><td><em>(required)</em></td><td>Path where the translated file will be saved. Must share the same extension as <code>--input</code>.</td></tr>
+<tr><td><code>--src-lang</code></td><td><code>-s</code></td><td><code>String</code></td><td><em>(required)</em></td><td>Source language code: <code>en</code>, <code>ne</code>, or <code>tmg</code>.</td></tr>
+<tr><td><code>--tgt-lang</code></td><td><code>-t</code></td><td><code>String</code></td><td><em>(required)</em></td><td>Target language code: <code>en</code>, <code>ne</code>, or <code>tmg</code>. Must differ from <code>--src-lang</code>.</td></tr>
+<tr><td><code>--base-url</code></td><td>—</td><td><code>String</code></td><td><code>https://tmt.ilprl.ku.edu.np/lang-translate</code></td><td>Override the API base URL.</td></tr>
+<tr><td><code>--api-token</code></td><td>—</td><td><code>String</code></td><td><em>(none)</em></td><td>API token. Overrides the <code>TMT_API_TOKEN</code> environment variable.</td></tr>
+<tr><td><code>--concurrency</code></td><td>—</td><td><code>usize</code></td><td><code>2</code></td><td>Maximum number of simultaneous in-flight API requests. Must be ≥ 1.</td></tr>
+<tr><td><code>--rate-limit-ms</code></td><td>—</td><td><code>u64</code></td><td><em>(none)</em></td><td>Fixed delay in milliseconds between API requests, regardless of concurrency.</td></tr>
+<tr><td><code>--max-retries</code></td><td>—</td><td><code>u32</code></td><td><code>4</code></td><td>Number of retries for non-rate-limit failures (e.g., network errors).</td></tr>
+<tr><td><code>--font-path</code></td><td>—</td><td><code>PathBuf</code></td><td><em>(none)</em></td><td>Path to a TrueType/OpenType font file. Required for PDF output.</td></tr>
+<tr><td><code>--dpi</code></td><td>—</td><td><code>u32</code></td><td><code>96</code></td><td>Resolution (DPI) for PDF page rendering. Must be ≥ 1.</td></tr>
+<tr><td><code>--jpeg-quality</code></td><td>—</td><td><code>u8</code></td><td><code>85</code></td><td>JPEG compression quality (1–100) for PDF background images.</td></tr>
+<tr><td><code>--verbose</code></td><td>—</td><td><code>bool</code></td><td><code>false</code></td><td>Enable debug-level tracing logs.</td></tr>
+<tr><td><code>--debug-bboxes</code></td><td>—</td><td><code>bool</code></td><td><code>false</code></td><td>Draw red rectangles around detected text regions in PDF output. Useful for diagnosing layout issues.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="concurrency--rate-limiting"><a class="header" href="#concurrency--rate-limiting">Concurrency &amp; Rate Limiting</a></h2>
+<p><code>--concurrency</code> controls the capacity of the async <code>Semaphore</code> inside <code>TranslationService</code> — it caps how many translation tasks run in parallel. <code>--rate-limit-ms</code> adds a fixed cooldown delay enforced by a <code>Mutex</code> inside <code>TmtClient</code>, ensuring a minimum spacing between any two requests regardless of the concurrency setting. Both can be used together for fine-grained throughput control.</p>
+<h2 id="pdf-specific-options"><a class="header" href="#pdf-specific-options">PDF-Specific Options</a></h2>
+<p>Because the PDF pipeline reconstructs documents by rendering translated text over a rasterized background of the original page, <code>--dpi</code> and <code>--jpeg-quality</code> let you trade off between output file size and visual fidelity:</p>
+<ul>
+<li>Higher <code>--dpi</code> → sharper background, larger file.</li>
+<li>Lower <code>--jpeg-quality</code> → smaller file, more compression artifacts.</li>
+</ul>
+<h2 id="debugging-flags"><a class="header" href="#debugging-flags">Debugging Flags</a></h2>
+<ul>
+<li><code>--verbose</code> sets the <code>tracing</code> subscriber level to <code>debug</code> for the application (dependencies stay at <code>warn</code>).</li>
+<li><code>--debug-bboxes</code> instructs the PDF reconstructor to draw bounding boxes around every detected text region, which helps diagnose mis-aligned or missing translated text.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="core-architecture"><a class="header" href="#core-architecture">Core Architecture</a></h1>
+<p>The TMT tool is structured as a pipeline that transforms source documents into translated outputs through a <strong>Parse → Validate → Execute</strong> lifecycle. The design deliberately decouples document format handling from the underlying translation service and network concerns.</p>
+<h2 id="system-overview"><a class="header" href="#system-overview">System Overview</a></h2>
+<p>The application follows a modular design where the <code>app</code> module orchestrates the high-level flow, while specialized modules handle CLI parsing, configuration, and format-specific logic.</p>
+<pre><code>┌─────────────┐     ┌──────────────┐     ┌──────────────────┐     ┌──────────────┐
+│  main.rs    │────▶│  app::run    │────▶│ formats::        │────▶│ Translation  │
+│  (CLI parse)│     │  (lifecycle) │     │ translate_file   │     │ Service      │
+└─────────────┘     └──────────────┘     └──────────────────┘     └──────────────┘
+                           │                      │
+                    RuntimeConfig          Format Handler
+                    (validated)           (pdf / docx / csv_tsv)
+</code></pre>
+<h2 id="data-flow-and-lifecycle"><a class="header" href="#data-flow-and-lifecycle">Data Flow and Lifecycle</a></h2>
+<h3 id="1-parse--validate"><a class="header" href="#1-parse--validate">1. Parse &amp; Validate</a></h3>
+<p>The system converts the raw <code>Cli</code> struct into a <code>RuntimeConfig</code>. During this phase it performs critical safety checks:</p>
+<ul>
+<li><strong>File existence and size</strong> — verifies the input file exists and does not exceed <code>MAX_FILE_SIZE_BYTES</code> (1 MB).</li>
+<li><strong>Format matching</strong> — ensures the output file extension matches the input extension.</li>
+<li><strong>Environment preparation</strong> — creates any necessary parent directories for the output path.</li>
+</ul>
+<h3 id="2-format-dispatch"><a class="header" href="#2-format-dispatch">2. Format Dispatch</a></h3>
+<p>Once validated, <code>formats::translate_file</code> acts as the central router. It reads the file extension, then initialises a <code>TmtClient</code> and <code>TranslationService</code> before handing off to the correct handler.</p>
+<h3 id="3-execution"><a class="header" href="#3-execution">3. Execution</a></h3>
+<p>The request is dispatched to one of the three format handlers — PDF, DOCX, or CSV/TSV. Each handler owns the internal structure of its file format and delegates the actual text translation to <code>TranslationService</code>.</p>
+<h2 id="major-subsystems"><a class="header" href="#major-subsystems">Major Subsystems</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Subsystem</th><th>Responsibility</th><th>Key Types</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>CLI &amp; Config</strong></td><td>Parse arguments and environment into a validated runtime state</td><td><code>Cli</code>, <code>RuntimeConfig</code></td></tr>
+<tr><td><strong>App Orchestration</strong></td><td>Manage the high-level lifecycle and filesystem safety checks</td><td><code>app::run</code>, <code>validate_input_file</code></td></tr>
+<tr><td><strong>Format Handlers</strong></td><td>Parse document structures and reconstruct translated output</td><td><code>formats::pdf</code>, <code>formats::docx</code>, <code>formats::csv_tsv</code></td></tr>
+<tr><td><strong>Translation Layer</strong></td><td>Sentence splitting, caching, and concurrency control</td><td><code>TranslationService</code>, <code>TmtClient</code></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="error-handling-strategy"><a class="header" href="#error-handling-strategy">Error Handling Strategy</a></h2>
+<p>A centralised <code>AppError</code> enum (defined with the <code>thiserror</code> crate) captures all failure modes — from IO failures and rate limits to format-specific parsing errors. Standard library errors such as <code>std::io::Error</code> and <code>csv::Error</code> are automatically converted into <code>AppError</code> variants via <code>From</code> implementations. Errors bubble up to <code>main.rs</code> where they are logged before the process exits with a non-zero code.</p>
+<p>See <a href="#error-handling">Error Handling</a> for a full reference of all error variants.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="application-entry-point--request-lifecycle"><a class="header" href="#application-entry-point--request-lifecycle">Application Entry Point &amp; Request Lifecycle</a></h1>
+<h2 id="entry-point--mainrs"><a class="header" href="#entry-point--mainrs">Entry Point — <code>main.rs</code></a></h2>
+<p>The binary entry point performs two steps and nothing else:</p>
+<ol>
+<li>Parse the command line into a <code>Cli</code> struct (via <code>clap</code>).</li>
+<li>Call <code>app::run(&amp;cli)</code> and handle any returned <code>AppError</code> by logging it and exiting with a non-zero code.</li>
+</ol>
+<pre class="playground"><code class="language-rust">// Conceptual outline of main.rs
+fn main() {
+    let cli = Cli::parse();
+    if let Err(e) = app::run(&amp;cli) {
+        eprintln!("Error: {e}");
+        std::process::exit(1);
+    }
+}</code></pre>
+<h2 id="apprun--the-lifecycle-coordinator"><a class="header" href="#apprun--the-lifecycle-coordinator"><code>app::run</code> — The Lifecycle Coordinator</a></h2>
+<p><code>app::run</code> drives the full Parse → Validate → Execute sequence:</p>
+<h3 id="step-1--build-runtimeconfig"><a class="header" href="#step-1--build-runtimeconfig">Step 1 — Build <code>RuntimeConfig</code></a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let config = RuntimeConfig::try_from(&amp;cli)?;
+<span class="boring">}</span></code></pre>
+<p><code>RuntimeConfig::try_from</code> validates every argument (see <a href="#configuration">Configuration</a>) and fails fast with a descriptive <code>AppError</code> on any violation.</p>
+<h3 id="step-2--validate-the-input-file"><a class="header" href="#step-2--validate-the-input-file">Step 2 — Validate the Input File</a></h3>
+<p><code>validate_input_file</code> performs filesystem-level checks before any network call is made:</p>
+<ul>
+<li>The input path must exist and be a regular file.</li>
+<li>The file size must not exceed <code>MAX_FILE_SIZE_BYTES</code> (1 MB).</li>
+<li>The output extension must match the input extension — e.g., you cannot translate a <code>.csv</code> into a <code>.docx</code>.</li>
+<li>Parent directories for the output path are created if they do not exist.</li>
+</ul>
+<h3 id="step-3--dispatch-to-format-handler"><a class="header" href="#step-3--dispatch-to-format-handler">Step 3 — Dispatch to Format Handler</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>formats::translate_file(&amp;config).await?;
+<span class="boring">}</span></code></pre>
+<p><code>translate_file</code> inspects the input extension and routes to the appropriate handler:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Extension</th><th>Handler</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.csv</code></td><td><code>formats::csv_tsv::translate</code></td></tr>
+<tr><td><code>.tsv</code></td><td><code>formats::csv_tsv::translate</code></td></tr>
+<tr><td><code>.docx</code></td><td><code>formats::docx::translate</code></td></tr>
+<tr><td><code>.pdf</code></td><td><code>formats::pdf::translate</code> <em>(requires <code>pdf</code> feature)</em></td></tr>
+</tbody>
+</table>
+</div>
+<p>An unrecognised extension returns <code>AppError::UnsupportedFormat</code>.</p>
+<h2 id="initialization-sequence-diagram"><a class="header" href="#initialization-sequence-diagram">Initialization Sequence (Diagram)</a></h2>
+<pre><code>main()
+  │
+  ├─ Cli::parse()               # clap parses argv
+  │
+  └─ app::run(&amp;cli)
+       │
+       ├─ RuntimeConfig::try_from(&amp;cli)   # validation
+       │       └─ AppError on failure
+       │
+       ├─ validate_input_file()            # filesystem checks
+       │       └─ AppError on failure
+       │
+       └─ formats::translate_file(&amp;config) # dispatch
+               ├─ TmtClient::new()
+               ├─ TranslationService::new()
+               └─ &lt;format handler&gt;::translate()
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
+<h2 id="the-apperror-enum"><a class="header" href="#the-apperror-enum">The <code>AppError</code> Enum</a></h2>
+<p>TMT uses a single centralised error type defined in <code>src/error.rs</code> using the <a href="https://crates.io/crates/thiserror"><code>thiserror</code></a> crate. Every failure mode in the application is represented as a variant of <code>AppError</code>, which gives callers a single type to match on and provides human-readable messages automatically via the <code>Display</code> trait.</p>
+<h2 id="error-propagation"><a class="header" href="#error-propagation">Error Propagation</a></h2>
+<p>All fallible functions return <code>Result&lt;T, AppError&gt;</code> and use the <code>?</code> operator to bubble errors upward. The chain terminates in <code>main.rs</code>, which logs the error and exits with a non-zero status code.</p>
+<pre><code>format handler error
+    │ ?
+TranslationService error
+    │ ?
+app::run
+    │ ?
+main  ──▶  eprintln! + process::exit(1)
+</code></pre>
+<h2 id="automatic-conversions"><a class="header" href="#automatic-conversions">Automatic Conversions</a></h2>
+<p>Standard library and third-party error types are automatically converted into <code>AppError</code> variants through <code>From</code> implementations:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Source Type</th><th><code>AppError</code> Variant</th></tr>
+</thead>
+<tbody>
+<tr><td><code>std::io::Error</code></td><td><code>AppError::Io</code></td></tr>
+<tr><td><code>csv::Error</code></td><td><code>AppError::Csv</code></td></tr>
+<tr><td>HTTP / network errors</td><td><code>AppError::Network</code> (via <code>TmtClient</code>)</td></tr>
+<tr><td>Rate-limit responses</td><td><code>AppError::RateLimit</code></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="key-error-variants"><a class="header" href="#key-error-variants">Key Error Variants</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Variant</th><th>When it occurs</th></tr>
+</thead>
+<tbody>
+<tr><td><code>MissingApiToken</code></td><td>No token provided via <code>--api-token</code> or <code>TMT_API_TOKEN</code></td></tr>
+<tr><td><code>InvalidArgument</code></td><td>A CLI argument fails a business-logic constraint (e.g. concurrency = 0)</td></tr>
+<tr><td><code>FileTooLarge</code></td><td>The input file exceeds <code>MAX_FILE_SIZE_BYTES</code></td></tr>
+<tr><td><code>FormatMismatch</code></td><td>Input and output extensions do not match</td></tr>
+<tr><td><code>UnsupportedFormat</code></td><td>The file extension is not handled by any format module</td></tr>
+<tr><td><code>RateLimit</code></td><td>The API responded with HTTP 429 and backoff was exhausted</td></tr>
+<tr><td><code>Io</code></td><td>Any filesystem read/write failure</td></tr>
+<tr><td><code>Csv</code></td><td>A parsing error in CSV/TSV content</td></tr>
+<tr><td><code>DocxParse</code></td><td>A structural error in a DOCX file</td></tr>
+<tr><td><code>PdfParse</code></td><td>A structural error in a PDF file <em>(pdf feature only)</em></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="adding-new-error-variants"><a class="header" href="#adding-new-error-variants">Adding New Error Variants</a></h2>
+<p>Because <code>AppError</code> uses <code>thiserror</code>, adding a new variant is straightforward:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, thiserror::Error)]
+pub enum AppError {
+    // ... existing variants ...
+
+    #[error("my new error: {0}")]
+    MyNewError(String),
+}
+<span class="boring">}</span></code></pre>
+<p>Implement <code>From&lt;YourLibraryError&gt;</code> if you want automatic <code>?</code> conversion from a third-party type.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="translation-service-layer"><a class="header" href="#translation-service-layer">Translation Service Layer</a></h1>
+<p>The Translation Service Layer sits between the document format handlers and the external TMT API. Its job is to take large, unstructured text extracted from a document and produce translated text efficiently — without hammering the API or doing redundant work.</p>
+<h2 id="responsibilities"><a class="header" href="#responsibilities">Responsibilities</a></h2>
+<ul>
+<li><strong>Text segmentation</strong> — split raw strings into sentences using linguistic delimiters (<code>.</code>, <code>!</code>, <code>?</code>, and the Devanagari danda <code>।</code>).</li>
+<li><strong>Concurrency management</strong> — an async <code>Semaphore</code> limits the number of simultaneous API requests.</li>
+<li><strong>Deduplication &amp; caching</strong> — identical sentences within or across documents are translated only once.</li>
+<li><strong>In-flight merging</strong> — if two tasks request the same sentence at the same time, only one network call is made; the second waits on a <code>tokio::sync::oneshot</code> channel for the result.</li>
+</ul>
+<h2 id="service-constraints"><a class="header" href="#service-constraints">Service Constraints</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Constraint</th><th>Value / Mechanism</th></tr>
+</thead>
+<tbody>
+<tr><td>Max request size</td><td><code>MAX_REQUEST_TEXT_BYTES</code> (5,000 chars)</td></tr>
+<tr><td>Concurrency</td><td><code>tokio::sync::Semaphore</code> (capacity = <code>--concurrency</code>)</td></tr>
+<tr><td>Sentence delimiters</td><td><code>.</code>  <code>!</code>  <code>?</code>  <code>।</code></td></tr>
+<tr><td>Minimum fragment length</td><td>5 characters (shorter fragments are merged)</td></tr>
+<tr><td>Deduplication</td><td><code>tokio::sync::oneshot</code> channels in a shared <code>HashMap</code></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="pipeline-flow"><a class="header" href="#pipeline-flow">Pipeline Flow</a></h2>
+<pre><code>Document Handler
+      │
+      │  raw text block
+      ▼
+TranslationService::translate_text()
+      │
+      ├─ split_sentences()          # split on . ! ? ।
+      │
+      ├─ for each sentence:
+      │     ├─ cache hit?  ──▶  return cached result
+      │     ├─ in-flight?  ──▶  wait on oneshot channel
+      │     └─ new request ──▶  acquire Semaphore permit
+      │                              │
+      │                        TmtClient::translate()
+      │                              │
+      │                         (rate limiting / retry)
+      │                              │
+      │                         translated sentence
+      │
+      └─ rejoin sentences ──▶  translated text block
+</code></pre>
+<h2 id="sub-pages"><a class="header" href="#sub-pages">Sub-pages</a></h2>
+<ul>
+<li><a href="#translationservice--sentence-splitting">TranslationService &amp; Sentence Splitting</a></li>
+<li><a href="#tmt-api-client">TMT API Client</a></li>
+<li><a href="#rate-limiting--backoff">Rate Limiting &amp; Backoff</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="translationservice--sentence-splitting"><a class="header" href="#translationservice--sentence-splitting">TranslationService &amp; Sentence Splitting</a></h1>
+<h2 id="translationservice"><a class="header" href="#translationservice"><code>TranslationService</code></a></h2>
+<p><code>TranslationService</code> (defined in <code>src/translate/service.rs</code>) is the single public interface that format handlers call. It holds:</p>
+<ul>
+<li>An <code>Arc&lt;TmtClient&gt;</code> for HTTP communication.</li>
+<li>A <code>Semaphore</code> to cap concurrent requests.</li>
+<li>A <code>Mutex&lt;HashMap&lt;CacheKey, CacheEntry&gt;&gt;</code> for deduplication and caching.</li>
+</ul>
+<h3 id="translate_text"><a class="header" href="#translate_text"><code>translate_text</code></a></h3>
+<p>The primary method signature (conceptually):</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub async fn translate_text(
+    &amp;self,
+    text: &amp;str,
+    src_lang: &amp;str,
+    tgt_lang: &amp;str,
+) -&gt; Result&lt;String, AppError&gt;
+<span class="boring">}</span></code></pre>
+<p>Internally it:</p>
+<ol>
+<li>Calls <code>split_sentences(text)</code> to obtain a list of sentence fragments.</li>
+<li>Spawns a concurrent task per fragment (bounded by the <code>Semaphore</code>).</li>
+<li>Each task checks the cache / in-flight map before making a network call.</li>
+<li>Joins all translated fragments back into a single string.</li>
+</ol>
+<h3 id="cache-key"><a class="header" href="#cache-key">Cache Key</a></h3>
+<p>Each entry in the internal cache is keyed on a <code>CacheKey</code>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct CacheKey {
+    text: String,
+    src_lang: String,
+    tgt_lang: String,
+}
+<span class="boring">}</span></code></pre>
+<p>This means the same sentence translated between different language pairs is cached independently.</p>
+<h2 id="split_sentences"><a class="header" href="#split_sentences"><code>split_sentences</code></a></h2>
+<p>Defined in <code>src/translate/sentence.rs</code>, <code>split_sentences</code> divides a text block on the following delimiters:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Delimiter</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.</code></td><td>Latin full stop</td></tr>
+<tr><td><code>!</code></td><td>Exclamation mark</td></tr>
+<tr><td><code>?</code></td><td>Question mark</td></tr>
+<tr><td><code>।</code></td><td>Devanagari danda (used in Nepali and Tamang)</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="fragment-merging"><a class="header" href="#fragment-merging">Fragment Merging</a></h3>
+<p>Short fragments (fewer than 5 characters) are merged with the next fragment before being sent to the API. This avoids wasting API quota on punctuation-only or single-word fragments and ensures the server has enough context for accurate translation.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
+<p>Input:</p>
+<pre><code>Hello world. How are you? I am fine!
+</code></pre>
+<p>Fragments after splitting and merging:</p>
+<pre><code>["Hello world.", "How are you?", "I am fine!"]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="tmt-api-client"><a class="header" href="#tmt-api-client">TMT API Client</a></h1>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p><code>TmtClient</code> (defined in <code>src/tmt/mod.rs</code>) is the low-level HTTP client responsible for communicating with the TMT translation API. It is initialised once and shared (via <code>Arc</code>) across all concurrent translation tasks.</p>
+<h2 id="responsibilities-1"><a class="header" href="#responsibilities-1">Responsibilities</a></h2>
+<ul>
+<li>Construct <code>TmtRequest</code> objects from text and language pair.</li>
+<li>Execute HTTP POST requests to the configured <code>base_url</code>.</li>
+<li>Parse <code>TmtResponse</code> and map HTTP status codes to typed <code>TmtError</code> variants.</li>
+<li>Enforce a minimum inter-request delay via a <code>Mutex</code>-protected timestamp.</li>
+</ul>
+<h2 id="request-format"><a class="header" href="#request-format">Request Format</a></h2>
+<p>Each API call sends a JSON body of roughly this shape:</p>
+<pre><code class="language-json">{
+  "text": "Hello world.",
+  "src_lang": "en",
+  "tgt_lang": "ne"
+}
+</code></pre>
+<p>The <code>text</code> field is limited to <code>MAX_REQUEST_TEXT_BYTES</code> (5,000 characters). Longer inputs must be split upstream by <code>TranslationService</code>.</p>
+<h2 id="response-handling"><a class="header" href="#response-handling">Response Handling</a></h2>
+<p>A successful response returns the translated text. Failure responses are mapped as follows:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>HTTP Status</th><th><code>TmtError</code> / <code>AppError</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>Success</td></tr>
+<tr><td><code>429 Too Many Requests</code></td><td><code>RateLimit</code> (triggers backoff)</td></tr>
+<tr><td><code>5xx</code></td><td><code>Network</code> (triggers retry)</td></tr>
+<tr><td>Other</td><td><code>UnexpectedStatus</code></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="rate-limiting-gate"><a class="header" href="#rate-limiting-gate">Rate-Limiting Gate</a></h2>
+<p><code>TmtClient</code> holds a <code>Mutex&lt;Instant&gt;</code> recording the time of the last request. When <code>--rate-limit-ms</code> is configured, each call acquires the mutex, sleeps until the required interval has elapsed since the last request, fires the HTTP call, and then updates the stored instant before releasing the mutex. This serialises the delay calculation even when multiple tokio tasks are running concurrently.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rate-limiting--backoff"><a class="header" href="#rate-limiting--backoff">Rate Limiting &amp; Backoff</a></h1>
+<p>TMT implements a multi-layer strategy to stay within API rate limits and recover gracefully from transient failures.</p>
+<h2 id="layer-1--fixed-rate-limit-delay"><a class="header" href="#layer-1--fixed-rate-limit-delay">Layer 1 — Fixed Rate Limit Delay</a></h2>
+<p>When <code>--rate-limit-ms &lt;N&gt;</code> is provided, <code>TmtClient</code> inserts a mandatory sleep of at least N milliseconds between any two consecutive requests. This is enforced by a <code>Mutex&lt;Instant&gt;</code> (see <a href="#tmt-api-client">TMT API Client</a>).</p>
+<h2 id="layer-2--exponential-backoff-with-jitter"><a class="header" href="#layer-2--exponential-backoff-with-jitter">Layer 2 — Exponential Backoff with Jitter</a></h2>
+<p><code>AsyncGlobalBackoffState</code> tracks the history of failures and calculates a retry delay using jittered exponential backoff:</p>
+<pre><code>delay = min(BASE_DELAY * 2^failures, MAX_DELAY) + random_jitter
+</code></pre>
+<ul>
+<li><strong>Streak tracking</strong> — consecutive failures increase the exponent; a successful request resets the streak.</li>
+<li><strong>Jitter</strong> — randomness is added to prevent thundering-herd problems when many tasks hit the API simultaneously.</li>
+</ul>
+<h2 id="layer-3--retry-after-header-parsing"><a class="header" href="#layer-3--retry-after-header-parsing">Layer 3 — <code>Retry-After</code> Header Parsing</a></h2>
+<p>When the API responds with HTTP 429 (Too Many Requests), the response may include a <code>Retry-After</code> header specifying how many seconds to wait. TMT parses this header and uses its value as the minimum delay before the next attempt, overriding the backoff calculation if the server-supplied value is larger.</p>
+<pre><code>HTTP 429
+Retry-After: 30
+</code></pre>
+<p>TMT will wait at least 30 seconds before retrying that request.</p>
+<h2 id="--max-retries"><a class="header" href="#--max-retries"><code>--max-retries</code></a></h2>
+<p>Non-rate-limit failures (e.g., network timeouts, HTTP 5xx) are retried up to <code>--max-retries</code> times (default: 4). Rate-limit (429) failures use backoff and do not count against this limit — they are retried indefinitely until the backoff delay is served.</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<pre><code>Request fails
+    │
+    ├─ HTTP 429 ──▶  parse Retry-After ──▶  sleep ──▶  retry (no limit)
+    │
+    └─ Other error
+           │
+           ├─ retries remaining? ──▶  exponential backoff + jitter ──▶  retry
+           │
+           └─ retries exhausted ──▶  AppError::Network (propagated up)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="format-handlers-overview"><a class="header" href="#format-handlers-overview">Format Handlers Overview</a></h1>
+<p>Format handlers live in the <code>src/formats/</code> module. Each handler is responsible for:</p>
+<ol>
+<li><strong>Parsing</strong> the source document structure (cells, paragraphs, PDF content streams, etc.).</li>
+<li><strong>Extracting</strong> text units to translate.</li>
+<li><strong>Delegating</strong> translation to <code>TranslationService</code>.</li>
+<li><strong>Reconstructing</strong> the output document with translated text, preserving all non-text structure.</li>
+</ol>
+<p>The central router is <code>formats::translate_file</code>, which reads the file extension from <code>RuntimeConfig</code> and dispatches to the correct handler. An unrecognised extension returns <code>AppError::UnsupportedFormat</code>.</p>
+<h2 id="handlers-at-a-glance"><a class="header" href="#handlers-at-a-glance">Handlers at a Glance</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Format</th><th>Handler module</th><th>Key challenge</th></tr>
+</thead>
+<tbody>
+<tr><td>CSV / TSV</td><td><code>formats::csv_tsv</code></td><td>Preserve column structure across all rows</td></tr>
+<tr><td>DOCX</td><td><code>formats::docx</code></td><td>Translate paragraph runs while keeping styles, numbering, and tables intact</td></tr>
+<tr><td>PDF</td><td><code>formats::pdf</code></td><td>Parse content streams, rasterise background, render translated text at correct positions</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="sub-pages-1"><a class="header" href="#sub-pages-1">Sub-pages</a></h2>
+<ul>
+<li><a href="#csv--tsv-translation">CSV &amp; TSV Translation</a></li>
+<li><a href="#docx-translation">DOCX Translation</a></li>
+<li><a href="#pdf-translation-pipeline">PDF Translation Pipeline</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="csv--tsv-translation"><a class="header" href="#csv--tsv-translation">CSV &amp; TSV Translation</a></h1>
+<p>The CSV/TSV handler (<code>src/formats/csv_tsv.rs</code>) translates delimited text files cell by cell while preserving the row/column structure and any header rows.</p>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
+<ol>
+<li><strong>Read</strong> — The file is parsed using the <code>csv</code> crate. For TSV files the delimiter is changed to <code>\t</code>.</li>
+<li><strong>Translate</strong> — Each non-empty cell value is sent to <code>TranslationService::translate_text</code>. Empty cells are passed through unchanged.</li>
+<li><strong>Write</strong> — Translated cell values are written to the output file using the same delimiter and quoting rules as the input.</li>
+</ol>
+<p>Because cell values are translated independently, the <code>TranslationService</code> cache is particularly effective here: repeated values (e.g. category names appearing in every row) are translated once and served from cache on subsequent rows.</p>
+<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
+<p>Parsing errors from the <code>csv</code> crate are automatically converted to <code>AppError::Csv</code> via the <code>From</code> implementation in <code>src/error.rs</code>.</p>
+<h2 id="limitations"><a class="header" href="#limitations">Limitations</a></h2>
+<ul>
+<li>The handler does not attempt to detect or skip header rows automatically. All cells, including headers, are sent for translation. If you want to preserve English headers, pre-process the file before passing it to TMT.</li>
+<li>Cells exceeding <code>MAX_REQUEST_TEXT_BYTES</code> (5,000 characters) are chunked by <code>TranslationService</code> at sentence boundaries before being sent.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="docx-translation"><a class="header" href="#docx-translation">DOCX Translation</a></h1>
+<p>The DOCX handler (<code>src/formats/docx.rs</code>) translates Microsoft Word documents at the paragraph level while leaving all formatting, styles, numbering, images, and tables structurally intact.</p>
+<h2 id="how-it-works-1"><a class="header" href="#how-it-works-1">How It Works</a></h2>
+<p>A <code>.docx</code> file is a ZIP archive containing XML files. The handler:</p>
+<ol>
+<li><strong>Unpacks</strong> the archive into memory.</li>
+<li><strong>Parses</strong> <code>word/document.xml</code> to locate paragraph (<code>&lt;w:p&gt;</code>) elements.</li>
+<li><strong>Extracts</strong> the concatenated text of each paragraph’s runs (<code>&lt;w:r&gt;&lt;w:t&gt;</code>).</li>
+<li><strong>Translates</strong> each paragraph’s text via <code>TranslationService::translate_text</code>.</li>
+<li><strong>Reconstructs</strong> the paragraph by replacing the text content of its runs with the translated text while keeping all run properties (<code>&lt;w:rPr&gt;</code>, bold, italic, font, etc.) unchanged.</li>
+<li><strong>Repacks</strong> the modified XML back into a ZIP archive and writes it to the output path.</li>
+</ol>
+<h2 id="formatting-preservation"><a class="header" href="#formatting-preservation">Formatting Preservation</a></h2>
+<p>Run-level properties (font, size, bold, colour) are preserved because the handler only modifies <code>&lt;w:t&gt;</code> text nodes, not the surrounding <code>&lt;w:rPr&gt;</code> elements. Paragraph-level properties (<code>&lt;w:pPr&gt;</code>) such as alignment, spacing, and list numbering are also untouched.</p>
+<h2 id="limitations-1"><a class="header" href="#limitations-1">Limitations</a></h2>
+<ul>
+<li>If a paragraph’s runs have different formatting (e.g. a word in bold mid-sentence), the translated output may collapse those runs into a single run to simplify reconstruction. Visual differences may appear in mixed-format paragraphs.</li>
+<li>Text inside text boxes, headers, and footers may not be translated in the current implementation. Check the source for which XML parts are currently processed.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="pdf-translation-pipeline"><a class="header" href="#pdf-translation-pipeline">PDF Translation Pipeline</a></h1>
+<blockquote>
+<p><strong>Requires the <code>pdf</code> feature flag:</strong> <code>cargo build --release --features pdf</code></p>
+</blockquote>
+<p>The PDF pipeline is the most complex format handler in TMT. Because PDFs encode text as positioned glyphs rather than editable strings, a full parse-rasterise-render cycle is required.</p>
+<h2 id="pipeline-stages"><a class="header" href="#pipeline-stages">Pipeline Stages</a></h2>
+<h3 id="1-parsing-srcformatspdfparserrs"><a class="header" href="#1-parsing-srcformatspdfparserrs">1. Parsing (<code>src/formats/pdf/parser.rs</code>)</a></h3>
+<p>The parser walks the PDF content stream operator by operator, identifying text-drawing operators and extracting:</p>
+<ul>
+<li>The text string for each operator.</li>
+<li>The bounding box (<code>Bbox</code>) — the page coordinates and dimensions of that text region.</li>
+<li>Font information referenced by the operator.</li>
+</ul>
+<p>This produces a list of <code>TextBlock</code> structs, each containing a bounding box and its original text.</p>
+<h3 id="2-translation"><a class="header" href="#2-translation">2. Translation</a></h3>
+<p>Each <code>TextBlock</code>’s text is sent to <code>TranslationService::translate_text</code>. Blocks are processed concurrently up to <code>--concurrency</code> in parallel.</p>
+<h3 id="3-reconstruction-srcformatspdfreconstructorrs"><a class="header" href="#3-reconstruction-srcformatspdfreconstructorrs">3. Reconstruction (<code>src/formats/pdf/reconstructor.rs</code>)</a></h3>
+<p>For each page:</p>
+<ol>
+<li>The original page is <strong>rasterised</strong> to a bitmap at the configured <code>--dpi</code>. This raster becomes the background image.</li>
+<li>The background is <strong>JPEG-compressed</strong> at <code>--jpeg-quality</code> and embedded in the new PDF page.</li>
+<li><strong>White rectangles</strong> are drawn over each original text bounding box to blank out the source text on the background.</li>
+<li>The <strong>translated text</strong> is rendered at the same bounding box position using the font specified by <code>--font-path</code>.</li>
+</ol>
+<h3 id="4-font-management-srcformatspdffontsrs"><a class="header" href="#4-font-management-srcformatspdffontsrs">4. Font Management (<code>src/formats/pdf/fonts.rs</code>)</a></h3>
+<p>Because translated Devanagari text cannot be rendered with a Latin font, a custom TrueType/OpenType font must be supplied via <code>--font-path</code>. The font manager loads the font, subsets it for the glyphs actually used, and embeds it in the output PDF.</p>
+<h2 id="configuration-reference"><a class="header" href="#configuration-reference">Configuration Reference</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Effect on PDF pipeline</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--font-path</code></td><td><em>(required)</em> Font used to render translated text</td></tr>
+<tr><td><code>--dpi</code></td><td>Resolution of the rasterised background (default: 96)</td></tr>
+<tr><td><code>--jpeg-quality</code></td><td>JPEG compression of background images (default: 85)</td></tr>
+<tr><td><code>--debug-bboxes</code></td><td>Draw red rectangles around all detected text regions</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="debugging-layout-issues"><a class="header" href="#debugging-layout-issues">Debugging Layout Issues</a></h2>
+<p>If translated text appears misaligned or bounding boxes are wrong:</p>
+<ol>
+<li>Run with <code>--debug-bboxes</code> to visualise where the parser detected text regions.</li>
+<li>Increase <code>--dpi</code> for a higher-fidelity background that makes alignment easier to judge.</li>
+<li>Check that the provided font contains the glyphs required for the target language.</li>
+</ol>
+<h2 id="limitations-2"><a class="header" href="#limitations-2">Limitations</a></h2>
+<ul>
+<li>PDFs with scanned/image-only pages contain no text operators; the parser will find nothing to translate on those pages.</li>
+<li>Complex ligatures or right-to-left scripts beyond Devanagari may not render correctly depending on the chosen font and the PDF rendering library’s shaping support.</li>
+<li>The rasterise-and-overlay approach means the output file size will typically be larger than the original.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="testing"><a class="header" href="#testing">Testing</a></h1>
+<p>TMT’s test suite lives in the <code>tests/</code> directory and covers two main areas.</p>
+<h2 id="configuration-validation-tests-testsconfig_validationrs"><a class="header" href="#configuration-validation-tests-testsconfig_validationrs">Configuration Validation Tests (<code>tests/config_validation.rs</code>)</a></h2>
+<p>These tests exercise the <code>RuntimeConfig::try_from</code> validation logic by constructing <code>Cli</code> structs with deliberate constraint violations and asserting that the correct <code>AppError</code> variant is returned.</p>
+<p>Covered scenarios include:</p>
+<ul>
+<li>Missing API token (neither <code>--api-token</code> nor <code>TMT_API_TOKEN</code> set).</li>
+<li>Whitespace-only API token.</li>
+<li><code>--concurrency 0</code> (must be ≥ 1).</li>
+<li>Identical source and target language codes.</li>
+<li><code>--dpi 0</code> (must be ≥ 1).</li>
+<li><code>--jpeg-quality 0</code> and <code>--jpeg-quality 101</code> (must be in [1, 100]).</li>
+<li><code>--font-path</code> pointing to a non-existent file.</li>
+</ul>
+<h2 id="retry-after-parsing--sentence-splitting-tests"><a class="header" href="#retry-after-parsing--sentence-splitting-tests">Retry-After Parsing &amp; Sentence Splitting Tests</a></h2>
+<h3 id="testsparse_retry_afterrs"><a class="header" href="#testsparse_retry_afterrs"><code>tests/parse_retry_after.rs</code></a></h3>
+<p>Validates the HTTP <code>Retry-After</code> header parser used by <code>TmtClient</code>. Tests cover:</p>
+<ul>
+<li>Integer values (<code>Retry-After: 30</code>).</li>
+<li>HTTP-date values (<code>Retry-After: Wed, 21 Oct 2025 07:28:00 GMT</code>).</li>
+<li>Missing or malformed headers.</li>
+</ul>
+<h3 id="testssentence_splitrs"><a class="header" href="#testssentence_splitrs"><code>tests/sentence_split.rs</code></a></h3>
+<p>Validates <code>split_sentences</code> from <code>src/translate/sentence.rs</code>. Tests cover:</p>
+<ul>
+<li>Splitting on <code>.</code>, <code>!</code>, <code>?</code>.</li>
+<li>Splitting on the Devanagari danda <code>।</code>.</li>
+<li>Fragment merging behaviour for short (&lt;5 character) fragments.</li>
+<li>Empty strings and strings with no delimiters.</li>
+</ul>
+<h2 id="running-the-tests"><a class="header" href="#running-the-tests">Running the Tests</a></h2>
+<pre><code class="language-bash"># All tests
+cargo test
+
+# A specific test file
+cargo test --test config_validation
+
+# With PDF feature enabled
+cargo test --features pdf
+</code></pre>
+<h2 id="adding-new-tests"><a class="header" href="#adding-new-tests">Adding New Tests</a></h2>
+<p>Integration tests belong in <code>tests/</code>. Unit tests for a module can be added inline in the source file in a <code>#[cfg(test)]</code> block:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn my_test() {
+        // ...
+    }
+}
+<span class="boring">}</span></code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="glossary"><a class="header" href="#glossary">Glossary</a></h1>
+<p><strong>AppError</strong>
+The central error enum defined in <code>src/error.rs</code>. All fallible operations in the application return <code>Result&lt;T, AppError&gt;</code>.</p>
+<p><strong>AsyncGlobalBackoffState</strong>
+The struct that tracks failure streaks and computes jittered exponential backoff delays between API retries.</p>
+<p><strong>Bbox</strong>
+Bounding box — a rectangle expressed in PDF page coordinates (x, y, width, height) that describes where a piece of text is positioned on a page. Used by the PDF parser and reconstructor.</p>
+<p><strong>CacheKey</strong>
+A composite key of <code>(text, src_lang, tgt_lang)</code> used to look up previously translated sentences in <code>TranslationService</code>’s internal cache.</p>
+<p><strong>Cli</strong>
+The struct derived by <code>clap</code> from raw command-line arguments. It is the unvalidated precursor to <code>RuntimeConfig</code>.</p>
+<p><strong>Danda (<code>।</code>)</strong>
+The Devanagari sentence-ending punctuation mark, equivalent to a full stop in Latin scripts. TMT’s sentence splitter recognises it as a sentence boundary.</p>
+<p><strong><code>formats::translate_file</code></strong>
+The top-level dispatch function in <code>src/formats/mod.rs</code>. It inspects the input file extension and routes execution to the correct format handler.</p>
+<p><strong>RuntimeConfig</strong>
+The validated configuration struct produced by <code>RuntimeConfig::try_from(&amp;cli)</code>. It is the single source of truth for the application’s runtime state and is passed to every subsystem.</p>
+<p><strong>Semaphore</strong>
+A <code>tokio::sync::Semaphore</code> used by <code>TranslationService</code> to cap the number of concurrent in-flight API requests to the value specified by <code>--concurrency</code>.</p>
+<p><strong><code>split_sentences</code></strong>
+The function in <code>src/translate/sentence.rs</code> that divides a text string into sentence fragments on <code>.</code>, <code>!</code>, <code>?</code>, and <code>।</code>.</p>
+<p><strong>TextBlock</strong>
+A struct produced by the PDF parser that pairs a <code>Bbox</code> with the extracted text string for one text-drawing operator on a PDF page.</p>
+<p><strong>TMT API</strong>
+The external HTTP translation service provided by Kathmandu University’s ILPRL lab, accessible at <code>https://tmt.ilprl.ku.edu.np/lang-translate</code>. TMT the CLI tool is a client for this API.</p>
+<p><strong>TmtClient</strong>
+The low-level HTTP client in <code>src/tmt/mod.rs</code> that sends <code>TmtRequest</code> objects to the TMT API and parses <code>TmtResponse</code> objects back.</p>
+<p><strong>TranslationService</strong>
+The high-level orchestration layer in <code>src/translate/service.rs</code>. It wraps <code>TmtClient</code> and adds sentence splitting, caching, deduplication, and concurrency control.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

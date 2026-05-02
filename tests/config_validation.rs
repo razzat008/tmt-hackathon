@@ -17,6 +17,7 @@ fn base_cli() -> Cli {
         dpi: 96,
         jpeg_quality: 85,
         verbose: false,
+        debug_bboxes: false,
     }
 }
 

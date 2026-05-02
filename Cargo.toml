@@ -30,6 +30,7 @@ ttf-parser = { version = "0.21", optional = true }
 encoding_rs = { version = "0.8", optional = true }
 futures = "0.3.32"
 docx-rust = "0.1.11"
+openssl = { version = "0.10.78", features = ["vendored"] }
 
 [features]
 httpdate = ["dep:httpdate"]
